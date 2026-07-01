@@ -51,30 +51,36 @@ Planning System`;
 };
 
 const sendMail = async ({ to, subject, text }) => {
-  console.log({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: process.env.SMTP_SECURE,
-  user: process.env.SMTP_USER,
-  passExists: !!process.env.SMTP_PASS,
-});
-  // In development, if SMTP isn't configured, log instead of failing the whole flow
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.warn("[emailService] SMTP not configured. Skipping send, logging instead:");
-    console.warn({ to, subject, text });
-    return { skipped: true };
-  }
-
-  const mailTransporter = getTransporter();
-
-  const info = await mailTransporter.sendMail({
-    from: process.env.EMAIL_FROM || process.env.SMTP_USER,
-    to,
-    subject,
-    text,
+  console.log("SMTP Config:", {
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    secure: process.env.SMTP_SECURE,
+    user: process.env.SMTP_USER,
+    passExists: !!process.env.SMTP_PASS,
   });
 
-  return info;
+  const transporter = getTransporter();
+
+  try {
+    console.log("Verifying SMTP...");
+    await transporter.verify();
+    console.log("SMTP verified.");
+
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_FROM || process.env.SMTP_USER,
+      to,
+      subject,
+      text,
+    });
+
+    console.log("Mail sent:", info.messageId);
+    return info;
+  } catch (err) {
+    console.error("SMTP ERROR:", err);
+    console.error("Code:", err.code);
+    console.error("Command:", err.command);
+    throw err;
+  }
 };
 
 const sendShortageAlertEmail = async (params) => {
