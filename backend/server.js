@@ -33,6 +33,7 @@ app.get("/api/health", (req, res) => {
 });
 
 // Routes
+app.use("/api/seed", require("./routes/seedRoute"));
 app.use("/api/auth", authRoutes);
 app.use("/api/materials", materialRoutes);
 app.use("/api/purchasers", purchaserRoutes);

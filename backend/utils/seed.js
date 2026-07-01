@@ -82,11 +82,20 @@ const run = async () => {
   console.log("  planner@transformer.com / Planner@123");
   console.log("  rajesh@transformer.com / Purchase@123");
 
-  await mongoose.connection.close();
-  process.exit(0);
+ // Don't close connection when called from seedRoute — server is using it
+  if (require.main === module) {
+    await mongoose.connection.close();
+    process.exit(0);
+  }
 };
 
-run().catch((err) => {
-  console.error("Seed failed:", err);
-  process.exit(1);
-});
+// Direct run: node utils/seed.js  or  npm run seed
+if (require.main === module) {
+  run().catch((err) => {
+    console.error("Seed failed:", err);
+    process.exit(1);
+  });
+}
+
+// Export for seedRoute (Render deployment)
+module.exports = run;
