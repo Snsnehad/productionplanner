@@ -66,7 +66,13 @@ const sendMail = async ({ to, subject, text }) => {
     subject,
     text,
   });
-
+console.log({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: process.env.SMTP_SECURE,
+  user: process.env.SMTP_USER,
+  passExists: !!process.env.SMTP_PASS,
+});
   return info;
 };
 
