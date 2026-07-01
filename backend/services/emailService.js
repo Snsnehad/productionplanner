@@ -51,6 +51,13 @@ Planning System`;
 };
 
 const sendMail = async ({ to, subject, text }) => {
+  console.log({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: process.env.SMTP_SECURE,
+  user: process.env.SMTP_USER,
+  passExists: !!process.env.SMTP_PASS,
+});
   // In development, if SMTP isn't configured, log instead of failing the whole flow
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     console.warn("[emailService] SMTP not configured. Skipping send, logging instead:");
@@ -66,13 +73,7 @@ const sendMail = async ({ to, subject, text }) => {
     subject,
     text,
   });
-console.log({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: process.env.SMTP_SECURE,
-  user: process.env.SMTP_USER,
-  passExists: !!process.env.SMTP_PASS,
-});
+
   return info;
 };
 
